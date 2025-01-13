@@ -1,0 +1,201 @@
+@media only screen and (max-width:1200px) {
+    .mainHeader .col-md-3
+    {
+        padding: 0px;
+    }
+    .grid .oneProduct
+    {
+        width: 45%;
+    }
+
+}
+@media only screen and (max-width:990px) {
+    .mainHeader .logo img
+    {
+        width: auto;
+        display: block;
+        margin: 0 auto;
+    }
+    .mainMenu
+    {
+        display: none;
+    }
+    .mainHeader .MoreIcons ul .hidden-xx
+    {
+        display: inline-block;
+    }
+    .homePage .mainSlider
+    {
+        margin: 25px 0px;
+    }
+    .homePage .mainSlider img
+    {
+        height: auto;
+    }
+    .products-section .oneProduct .pic .pro {
+        width: auto;
+        display: block;
+        margin: 0 auto;
+    }
+    .banners-section .pic .cover
+    {
+        height: auto;
+    }
+    .footer .one p
+    {
+        margin-bottom: 20px;
+    }
+    .footer .copyright p
+    {
+        text-align: center;
+    }
+    .footer .visa img
+    {
+        display: block;
+        margin: 0 auto;
+        float: none;
+        margin-top: 12px;
+    }
+    .grid .oneProduct .pic .pro
+    {
+        width: 200px;
+    }
+    .grid .oneProduct .content .price , .grid .oneProduct .content .addToCart
+    {
+        width: 100%;
+    }
+    .grid .oneProduct .content .price h5 , .grid .oneProduct .content .price h6
+    {
+        text-align: center;
+    }
+    .cartPage .cartContent .one-cart
+    {
+        display: block;
+    }
+    .cartPage .cartContent .one-cart .pic img {
+        width: auto;
+        display: block;
+        margin: 0 auto;
+    }
+    .cartPage .cartContent .one-cart .data
+    {
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    .cartPage .cartContent .one-cart .counter{
+        text-align: center;
+    }
+
+}
+
+@media only screen and (max-width:767px) {
+
+    .mainHeader .socialMedia ul li
+    {
+        margin-right: 10px;
+    }
+    .mainHeader .language button img {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+    .mainHeader .searchFilter button , .mainHeader .searchFilter select , .mainHeader .searchFilter input
+    {
+        width: auto;
+    }
+    .grid .oneProduct .pic .pro
+    {
+        width: 100%;
+    }
+    .products-section .products-results .sorting
+    {
+        display: block;
+    }
+    .products-section .products-results form
+    {
+        float: none;
+        display: block;
+        margin-top: 12px;
+        text-align: center;
+        margin-bottom: 12px;
+    }
+    .products-section .buttons
+    {
+        text-align: center;
+        margin-top: 12px;
+        margin-bottom: 15px;
+    }
+    .products-section .oneProduct .content a
+    {
+        line-height: 25px;
+        font-size: 12px;
+    }
+    .bulk-orders .aboutUs p
+    {
+        width: 100%;
+    }
+    .bulk-orders .content
+    {
+        width: 100%;
+    }
+    .bulk-orders .content p , .bulk-orders .content form
+    {
+        width: 100%;
+    }
+    .cart-section .shoppingBasket .product .pic img
+    {
+        display: block;
+        margin: 0 auto;
+        width: auto;
+    }
+    .cart-section .discountCode form label
+    {
+        margin-bottom: 10px;
+    }
+    .cart-section .discountCode form label , .cart-section .discountCode form input
+    {
+        width: 100%;
+    }
+     .cart-section .discountCode form button
+     {
+         width: 100%;
+         margin-top: 10px;
+         margin-bottom: 10px;
+     }
+    .cart-section .shoppingBasket .product .total
+    {
+        text-align: right;
+    }
+    .bulk-orders .privacyPolicy p
+    {
+        width: 100%;
+    }
+    .orders-section .ordersContent .one-order .data h2
+    {
+        font-size: 12px;
+        line-height: 25px;
+    }
+    .orders-section .addressContent .address-details
+    {
+        width: 100%;
+    }
+    .orders-section .addressContent .address-details ul li {
+        margin-left: 5px;
+        margin-right: 5px;
+        font-size: 10px;
+    }
+    .orders-section .addressContent .address-details h4 , .orders-section .addressContent .address-details .data p span
+    {
+        font-size: 12px;
+    }
+    .product-details .product-content .actions
+    {
+        display: block;
+        text-align: center;
+    }
+    .product-details .product-content .actions .counter
+    {
+        margin-bottom: 20px;
+    }
+
+
+}
