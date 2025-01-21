@@ -80,7 +80,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::put('/front_settings/{id}/update', [SettingsController::class, 'update'])->name('settings.update');
 
     //-----------------------------------------------------------------------------/colors
-    Route::resource('dashboard/colors', ColorController::class);
+    Route::resource('/colors', ColorController::class);
 
     //-----------------------------------------------------------------------------/Designs
     Route::resource('/designs', DesignsController::class);
