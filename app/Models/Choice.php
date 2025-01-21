@@ -32,4 +32,13 @@ class Choice extends Model
   {
     return $this->belongsToMany(Product::class, 'choices_products', 'choice_id', 'product_id');
   }
+  
+    public function getCurrentNameLangAttribute()
+    {
+        $locale = app()->getLocale();
+        if ($locale === 'ar' || empty($this->name_en)) {
+            return $this->name;
+        }
+        return $this->name_en;
+    }
 }

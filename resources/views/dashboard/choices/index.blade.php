@@ -38,16 +38,16 @@
                             </thead>
 
                             <tbody>
-                                @forelse ($choices as $category)
+                                @forelse ($choices as $choice)
                                     <tr data-id="5">
 
                                         <td colspan="2" data-field="id">
-                                            {{ $category->CurrentNameLang }}
+                                            {{ $choice->CurrentNameLang }}
                                         </td>
 
                                         {{-- @can('category.edit') --}}
                                             <td style="width: 100px">
-                                                <a href="{{ route('main_choices.edit', $category->id) }}"
+                                                <a href="{{ route('main_choices.edit', $choice->id) }}"
                                                     class="btn btn-secondary btn-sm edit" title="تعديل">
                                                     <i class="fas fa-pencil-alt"></i>
                                                 </a>
@@ -55,14 +55,14 @@
                                         {{-- @endcan --}}
 
                                         {{-- @can('category.delete') --}}
-                                            <form action="{{ route('main_choices.destroy', $category->id) }}" method="post"
-                                                id="formDelete_{{ $category->id }}">
+                                            <form action="{{ route('main_choices.destroy', $choice->id) }}" method="post"
+                                                id="formDelete_{{ $choice->id }}">
                                                 @csrf
                                                 @method('delete')
                                                 <td style="width: 7%;">
                                                     <button style="font-size: 12px;"
                                                         class="btn btn-danger waves-effect waves-light" title="حذف"
-                                                        type="button" onclick="confirmDelete({{ $category->id }})">
+                                                        type="button" onclick="confirmDelete({{ $choice->id }})">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </td>
