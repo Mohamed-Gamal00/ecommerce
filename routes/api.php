@@ -98,6 +98,8 @@ Route::middleware(['changeLanguage'])->group(function () {
     ###########################################################################-- Authentication
     Route::controller(UserAuthController::class)->group(function () {
         Route::post('register', 'register');
+        Route::post('verify-code', 'verifyCode');
+        Route::post('resend-verify-code', [UserAuthController::class, 'resendVerifyCode']);
         Route::post('login', 'login');
         Route::post('forget-password', 'forgetPassword');
         Route::post('reset-password', [UserAuthController::class, 'resetPassword']);

@@ -6,7 +6,7 @@ use App\Models\Setting;
 use GuzzleHttp\Client;
 use Exception;
 
-class moraSms
+class qyadatSms
 {
     public $client;
 
@@ -19,14 +19,14 @@ class moraSms
 
     public function sendSms($phone, $message, $language = 'en', $model = null)
     {
-//        dd('stop send now');
+        dd('stop send now');
         $setting = Setting::first();
 
         try {
             // API credentials
             $apiKey = $setting->sms_api_key; // Mora API key
             $username = $setting->sms_user_name; // Your username
-            $sender = $setting->sms_sender; // Sender name (owner name)
+            $sender = $setting->sernder; // Sender name (owner name)
             $phone_number = $phone; // phone of user who will receive sms
             $sms_content = urlencode($message); //message
 
@@ -39,15 +39,29 @@ class moraSms
             // Get the response body
             $content = $response->getBody()->getContents();
 
-            $jsonResponse = json_decode($content, true);
+            $xml = (array)simplexml_load_string($content);
 
-            if (isset($jsonResponse['status']['code']) && $jsonResponse['status']['code'] == 200) {
+            if ($xml[0] == '0') {
                 return true;
             } else {
-                info("Mora API error status or unexpected response!");
+
+                info("Qyadat error status!");  // log
                 return false;
             }
 
+//            // Decode JSON response (Mora API usually returns JSON)
+//            $jsonResponse = json_decode($content, true);
+//
+////            dd($jsonResponse);
+//            // Check for success in the response
+//            if (isset($jsonResponse['status']) && $jsonResponse['status'] == 'success') {
+//                return true;
+//            } else {
+//                // Log and dump error message for debugging
+//                info("Mora API error: " . json_encode($jsonResponse));
+//                dd($jsonResponse); // This will stop execution and display the API response
+//                return false;
+//            }
         } catch (Exception $e) {
             // Log the exception message if the API call fails
             info("Mora API failed to send SMS to $phone: " . $e->getMessage());

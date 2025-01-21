@@ -17,8 +17,8 @@ class VerificationServices
     public function setVerificationCode($userId, $isResetPassword = false)
     {
         $code = mt_rand(1000, 9999);
-        $expiresAt = now()->addMinutes(5);
-        //        $expiresAt = now()->addSeconds(5);
+        // $expiresAt = now()->addMinutes(5);
+        $expiresAt = now()->addSeconds(60);
         $oldCode = User_verfication::where('user_id', $userId)->where('is_reset_password', $isResetPassword)->first();
         $newCode = User_verfication::updateOrCreate([
             'id' => $oldCode ? $oldCode->id : null

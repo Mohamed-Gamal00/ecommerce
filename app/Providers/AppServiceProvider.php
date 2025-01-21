@@ -21,5 +21,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+        require_once app_path('Helper/TextTranslate.php');
     }
 }

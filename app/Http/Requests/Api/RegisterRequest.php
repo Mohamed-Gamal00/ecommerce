@@ -32,7 +32,7 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'email', 'string', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::defaults()],
             'family_name' => ['required', 'string', 'max:255'],
-            'phone_number' => ['required', 'numeric', 'digits_between:7,15'],
+            'phone_number' => 'required|exists:users,phone_number',
             'address' => ['required', 'string', 'max:255'],
             'city_id' => ['required', 'exists:cities,id'],
         ];
