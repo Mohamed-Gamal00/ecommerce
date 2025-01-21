@@ -6,41 +6,37 @@ use App\Helper\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\LoginRequest;
 use App\Http\Requests\Api\RegisterRequest;
-use App\Mail\PasswordResetCodeMail;
-use App\Models\ForgetPassword;
 use App\Models\User;
+use App\Models\User_verfication;
 use App\Models\UserAddress;
-use Carbon\Carbon;
+use App\Services\SMSGateways\moraSms;
+use App\Services\VerificationServices;
 use Exception;
-use Illuminate\Contracts\Auth\PasswordBroker;
-use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Password;
-use Laravel\Fortify\Actions\CompletePasswordReset;
-use Laravel\Fortify\Contracts\FailedPasswordResetLinkRequestResponse;
-use Laravel\Fortify\Contracts\FailedPasswordResetResponse;
-use Laravel\Fortify\Contracts\PasswordResetResponse;
-use Laravel\Fortify\Contracts\ResetsUserPasswords;
-use Laravel\Fortify\Contracts\SuccessfulPasswordResetLinkRequestResponse;
-use Laravel\Fortify\Fortify;
 
-use Illuminate\Support\Str;
 
 
 class UserAuthController extends Controller
 {
+    public $sms_service;
+    public $moraSms;
+
+    public function __construct(VerificationServices $services, moraSms $moraSmsGateway)
+    {
+        $this->sms_service = $services;
+        $this->moraSms = $moraSmsGateway;
+    }
+
     public function register(RegisterRequest $request)
     {
-        $data = [];
-        try {
 
-            DB::transaction(function () use ($request, &$data) {
+
+        $user = null;
+
+        try {
+            DB::transaction(function () use ($request, &$user) {
                 $user = User::create([
                     'first_name' => $request->first_name,
                     'family_name' => $request->family_name,
@@ -49,7 +45,6 @@ class UserAuthController extends Controller
                     'password' => Hash::make($request->password),
                     'address' => $request->address
                 ]);
-
                 UserAddress::create([
                     'address_title' => 'العنوان الأساسي',
                     'first_name' => $user->first_name,
@@ -61,25 +56,102 @@ class UserAuthController extends Controller
                     'city_id' => $request->city_id,
                     'main_address' => true
                 ]);
-                $data['token'] = $user->userToken->token;
             });
 
+            // Generate the verification code and SMS
+            $verificationData = $this->sms_service->setVerificationCode($user->id);
+            $message = $this->sms_service->getSMSVerifyMessageByAppName($verificationData->code);
+            // $smsSent = $this->moraSms->send_sms($user->phone_number, $message);
+
+           $smsSent = true;
+
+            if ($smsSent) {
+                return response()->json([
+                    'message' => translateWithHTMLTags("تم ارسال كود التحقق الي رقمك"),
+                    'verification_required' => true,
+                    'user_id' => $user->id,  // Send back user id for further verification process
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Failed to send verification SMS. Please try again.',
+                ], 500);
+            }
 
         } catch (Exception $e) {
-            return ApiResponse::sendResponse(500, 'An Error Occurred While Create Account');
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'An Error Occurred While Creating Account',
+            ], 500);
+        }
+    }
+
+    public function verifyCode(Request $request)
+    {
+
+        $verificationData = $request->validate([
+            'user_id' => 'required',
+            'code' => 'required',
+        ]);
+
+        $user = User::find($verificationData['user_id']);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        /*check expired code*/
+        $user_verificationCode = User_verfication::where('user_id', $user->id)->first();
+        if ($user_verificationCode->verification_code_expires_at && now()->greaterThan($user_verificationCode->verification_code_expires_at)) {
+            return ApiResponse::sendResponse(403, "انتهت صلاحية رمز التحقق. يرجى طلب واحد جديدة.");
         }
 
-        return ApiResponse::sendResponse(201, 'Account Created Successfully', $data);
+        $isValidCode = $this->sms_service->checkOTPCodePassword($user->id, $verificationData['code']);
+
+        if ($isValidCode) {
+
+            User_verfication::where('user_id', $user->id)
+                ->where('code', $verificationData['code']) // Ensure it updates the correct code
+                ->update(['is_verified' => true]);
+
+            $token = $user->createToken('-AuthToken')->plainTextToken;
+            return response()->json([
+                'message' => 'Verification successful',
+                'access_token' => $token,
+            ]);
+        } else {
+            return response()->json(['message' => 'Invalid verification code'], 401);
+        }
     }
 
     public function login(LoginRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('phone_number', $request->phone_number)->first();
+        if ($user && $user->verificationCode && !$user->verificationCode->is_verified) {
+
+            // Generate the verification code and SMS
+            $verificationData = $this->sms_service->setVerificationCode($user->id);
+            $message = $this->sms_service->getSMSVerifyMessageByAppName($verificationData->code);
+            // $smsSent = $this->moraSms->send_sms($user->phone_number, $message);
+
+           $smsSent = true;
+
+            if ($smsSent) {
+                return response()->json([
+                    'message' => "Your account is not verified. A new verification code has been sent to your phone number.",
+                    'verification_required' => true,
+                    'user_id' => $user->id,
+                ], 403);
+            } else {
+                return response()->json([
+                    'message' => 'Failed to send verification SMS. Please try again later.',
+                ], 500);
+            }
+
+        }
+
 
         if ($user && Hash::check($request->password, $user->password)) {
-            $token = $this->createToken($user);
+            $token = $user->createToken('-AuthToken')->plainTextToken;
             $data = [
-                'email' => $user->email,
                 'token' => $token,
             ];
 
@@ -89,81 +161,90 @@ class UserAuthController extends Controller
         return ApiResponse::sendResponse(401, 'Login Failed', []);
     }
 
-    private function createToken($user)
-    {
 
-        $token = encrypt(Str::random(30));
-        $user->userToken()->create([
-            'token' => $token,
+    public function logout()
+    {
+        auth()->user()->tokens()->delete();
+
+        return response()->json([
+            "message" => "logged out"
         ]);
-
-        return $token;
-    }
-
-    public function logout(Request $request)
-    {
-        $user = $request->user();
-
-
-        $this->deleteToken($user);
-
-        return ApiResponse::sendResponse(200, 'Logout Successfully', []);
-    }
-
-    private function deleteToken($user)
-    {
-        $user->userToken()->delete();
-
-
     }
 
     public function forgetPassword(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('phone_number', $request->phone_number)->first();
         if (!$user) {
-            return ApiResponse::sendResponse(200, 'this email not exist');
+            return ApiResponse::sendResponse(200, 'this phone_number not exist');
         }
-        // Generate UUID and unique code
-        $uuid = Str::uuid()->toString();
-        $code = Str::random(6); // Generates a random 6-character string
 
-        ForgetPassword::create([
-            'uuid' => $uuid,
-            'user_id' => $user->id,
-            'code' => $code,
-        ]);
-        // Send the code to the user's email
-        // Mail::to($request->email)->send(new PasswordResetCodeMail($code));
-        return ApiResponse::sendResponse(200, 'Reset code sent to your email.', $code);
+        // Generate the verification code and SMS
+        $verificationData = $this->sms_service->setVerificationCode($user->id);
+        $message = $this->sms_service->getSMSVerifyMessageByAppName($verificationData->code);
+        // $smsSent = $this->moraSms->send_sms($user->phone_number, $message);
+
+       $smsSent = true;
+
+        if ($smsSent) {
+            return response()->json([
+               'message' => "$message",
+                'verification_required' => true,
+                'user_id' => $user->id,  // Send back user id for further verification process
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Failed to send verification SMS. Please try again.',
+            ], 500);
+        }
     }
+
 
     public function resetPassword(Request $request)
     {
-        $request->validate(['code' => 'required', 'new_password' => 'required']);
+        $user = User::where('id', $request->user_id)->first();
+        $isValidCode = $this->sms_service->checkOTPCodePassword($user->id, $request->code_verify);
+        if ($isValidCode) {
+            $request->validate(['password' => 'required|string|min:6|confirmed']);
+            $user->update(['password' => $request->password]);
+            return response()->json(['message' => 'Password reset successfully.'], 200);
 
-        $record = ForgetPassword::where('code', $request->code)->first();
-
-        if (!$record || Carbon::parse($record->created_at)->addMinutes(5)->isPast()) {
-            return response()->json(['message' => 'Reset code is invalid or expired.'], 400);
+        } else {
+            return response()->json(['message' => 'Invalid verification code'], 401);
         }
-
-        // Reset the user's password
-        $user = User::find($record->user_id);
-        $user->update(['password' => $request->new_password]);
-
-        // Optionally, delete the record after successful password reset
-        $record->delete();
-
-        return response()->json(['message' => 'Password reset successfully.'], 200);
     }
 
-    /**
-     * Get the broker to be used during password reset.
-     *
-     */
-    protected function broker(): PasswordBroker
+    public function resendVerifyCode(Request $request)
     {
-        return Password::broker(config('fortify.passwords'));
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'user_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::sendResponse(422, "Validation Error", $validator->errors());
+        }
+
+        $user_id = $request->user_id;
+        $user = User::find($user_id);
+        if (!$user) {
+            return 'user id not found';
+        }
+
+        return $this->handleTelephoneVerification($user);
+    }
+
+    public function handleTelephoneVerification($user)
+    {
+        $verificationData = $this->sms_service->setVerificationCode($user->id);
+        $message = $this->sms_service->getSMSVerifyMessageByAppName($verificationData->code);
+        // $smsSent = $this->moraSms->send_sms($user->telephone, $message);
+       $smsSent = true;
+
+        if ($smsSent) {
+            $data = ['user_id' => $user->id];
+            return ApiResponse::sendResponse(200, translateWithHTMLTags("تم ارسال كود التحقق الي رقمك"), $data);
+        } else {
+            return ApiResponse::sendResponse(500, "Failed to send verification SMS. Please try again.");
+        }
     }
 
 }

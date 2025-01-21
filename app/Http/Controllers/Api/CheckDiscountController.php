@@ -79,23 +79,24 @@ class CheckDiscountController extends Controller
             if ($isGlobalDiscount || $discountCode->products->contains($item->product_id)) {
                 // Apply discount based on discount type نوع الخصم اذا كان نسبة او ثابت
                 if ($discountCode->discount_type == 'percentage') {
-                    $discountAmount = ($item->product->price * $discountCode->price) / 100;
+                    $discountAmount = (($item->product->discount_price ?? $item->product->price) * $discountCode->price) / 100;
                 } else {
                     $discountAmount = $discountCode->price;
                 }
+
                 // Set the discounted price
                 // نسبة الخصم علي المنتج الواحد
-//                $item->discounted_price = max(0, $item->product->price - $discountAmount);
-                $item->discounted_price = max(0, $item->product->price - $discountAmount);
+                $originalPrice = $item->product->discount_price ?? $item->product->price;
+                $item->discounted_price = max(0, $originalPrice - $discountAmount);
                 $item->save();
             }
         }
-
+        
         return response()->json([
             'message' => 'Discount code applied successfully.',
             'discount_code' => $discountCode->code,
             'discount_price' => $discountCode->price,
-            'cart' => $cartItems
+//            'cart' => $cartItems
         ], 200);
     }
 

@@ -46,13 +46,13 @@ use App\Http\Controllers\Api\StaticPagesController;
 
 Route::middleware(['changeLanguage'])->group(function () {
 
-    Route::middleware('api.auth')->get('/user', function (Request $request) {
+    Route::middleware('auth:user')->get('/user', function (Request $request) {
         return $request->user();
     });
 
 
     ###########################################################################-- User Profile
-    Route::middleware('api.auth')->group(function () {
+    Route::middleware('auth:user')->group(function () {
         #----------------------------------------------------------------------------------- Personal Info
         Route::post('change-personal-info', [PersonalInfoController::class, 'changePersonalInfo']);
         Route::post('change-password', [PersonalInfoController::class, 'changePassword']);
@@ -101,7 +101,7 @@ Route::middleware(['changeLanguage'])->group(function () {
         Route::post('login', 'login');
         Route::post('forget-password', 'forgetPassword');
         Route::post('reset-password', [UserAuthController::class, 'resetPassword']);
-        Route::post('logout', 'logout')->middleware('api.auth');
+        Route::post('logout', 'logout')->middleware('auth:user');
     });
 
 
@@ -170,12 +170,12 @@ Route::middleware(['changeLanguage'])->group(function () {
     Route::post('create-guest', [GuestController::class, 'createGuest']);
 
     ###########################################################################-- Favorite Products
-    Route::get('all-user-fav-products', [GetAllFavProductsController::class, 'userFavProducts'])->middleware('api.auth');
-    Route::post('user-fav-product-add-or-delete', [AddToFavProductsController::class, 'userAddFavProducts'])->middleware('api.auth');
+    Route::get('all-user-fav-products', [GetAllFavProductsController::class, 'userFavProducts'])->middleware('auth:user');
+    Route::post('user-fav-product-add-or-delete', [AddToFavProductsController::class, 'userAddFavProducts'])->middleware('auth:user');
 
     Route::get('all-guest-fav-products', [GetAllFavProductsController::class, 'guestFavProducts']);
     Route::post('guest-fav-product-add-or-delete', [AddToFavProductsController::class, 'guestAddFavProducts']);
-    Route::get('check-if-auth', [AddToFavProductsController::class, 'checkIfAuth'])->middleware('api.auth');
+    Route::get('check-if-auth', [AddToFavProductsController::class, 'checkIfAuth'])->middleware('auth:user');
     Route::get('check-if-product-exists', [AddToFavProductsController::class, 'checkIfProductExists']);
 
 

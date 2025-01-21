@@ -48,6 +48,7 @@ class CheckoutController extends Controller
         $user = $request->user();
 
         $isAddingNewAddress = !$request->has('user_address');
+//        return $user->addresses;
 
         if ($request->has('user_address') && ($request->first_name || $request->last_name || $request->phone_number || $request->country_id || $request->city_id || $request->address)) {
             return response()->json(['message' => 'Please select only one option: either choose an existing address or provide a new address.'], 422);
@@ -113,7 +114,7 @@ class CheckoutController extends Controller
                 $UserAddress = UserAddress::where('id', $request->user_address)->first();
                 if ($UserAddress) {
                     $shipping_price = $UserAddress->city->shipping_price;
-//                    return $city;
+//
                 }
             }
         } ///
@@ -177,7 +178,7 @@ class CheckoutController extends Controller
 
 //            return $this->totalBeforeDiscount($user);
 //            return $this->total($user);
-
+            $AddedTax = ($this->total($user) * ($valueAddedTax / 100));
             $order = Order::create([
                 'user_id' => $user->id,
                 'payment_method' => $request->payment_method, // cash on deleviry
@@ -185,7 +186,7 @@ class CheckoutController extends Controller
                 'note' => $request->note,
                 'shipping_price' => request()->pickup_from_store == '1' ? null : $shipping_price,
                 'totalBeforeDiscount' => $this->totalBeforeDiscount($user),
-                'total_price' => $this->total($user) + ($this->total($user) * ($valueAddedTax / 100)),
+                'total_price' => $this->total($user),
                 'cookie_id' => $user->id ? null : Cart::getCookieId() // TODO:: what is this used for ?
             ]);
 
@@ -200,7 +201,7 @@ class CheckoutController extends Controller
                     'order_id' => $order->id,
                     'product_id' => $cart_items->product_id,
                     'product_name' => $cart_items->product->name, // product is the relation
-                    'price' => $cart_items->product->price * $cart_items->quantity, // product is the relation
+                    'price' => $cart_items->product->discount_price ?? $cart_items->product->price, // product is the relation
                     'quantity' => $cart_items->quantity,
                     'color' => $cart_items->color_id
                 ]);
@@ -225,6 +226,7 @@ class CheckoutController extends Controller
                     $order->addresses()->create($addressData);
                 } else {
                     $UserAddress = UserAddress::where('id', $request->user_address)->first();
+//                    return $UserAddress;
                     if ($UserAddress) {
                         $address['first_name'] = $UserAddress->first_name;
                         $address['last_name'] = $UserAddress->family_name;
@@ -294,24 +296,30 @@ class CheckoutController extends Controller
 
     }
 
+    public function total($user): float
+    {
+        /* السعر بعد الخصم لو فيه خصم*/
+        return Cart::with('product')->withoutGlobalScope('cookie_id')
+            ->where('user_id', $user->id)->where('status', 0)->get()
+            ->sum(function ($item) {
+                if ($item->product->discount_price) {
+                    return $item->quantity * ($item->discounted_price ?? $item->product->discount_price);
+                } else {
+
+                    return $item->quantity * ($item->discounted_price ?? $item->product->price);
+                }
+            });
+    }
+
+
     public function totalBeforeDiscount($user): float
     {
         return Cart::with('product')->withoutGlobalScope('cookie_id')
             ->where('user_id', $user->id)->where('status', 0)->get()->sum(function ($item) {
-                return $item->quantity * $item->product->price;
+                return $item->quantity * $item->product->discount_price ?? $item->product->price;
             });
     }
 
-
-    /* السعر بعد الخصم لو فيه خصم*/
-
-    public function total($user): float
-    {
-        return Cart::with('product')->withoutGlobalScope('cookie_id')
-            ->where('user_id', $user->id)->where('status', 0)->get()->sum(function ($item) {
-                return $item->quantity * ($item->discounted_price ?? $item->product->price);
-            });
-    }
 
     /* ضريبة القيمة المضافة*/
 

@@ -30,8 +30,18 @@ class CartController extends Controller
                 ->count();
 
             $TotalPrice = $cartItems->sum(function ($item) {
-                return $item->quantity * ($item->discounted_price ?? $item->product->price);
+                return $item->quantity * ($item->product->discount_price ?? $item->product->price);
             });
+
+//            // Calculate total price of products without discounts
+//            $TotalPriceWithoutDiscount = $cartItems->sum(function ($item) {
+//                // Only sum products that do not have a discount_price
+//                return is_null($item->product->discount_price)
+//                    ? $item->quantity * $item->product->price
+//                    : 0;
+//            });
+
+//            $TotalPrice = $TotalPriceWithDiscount + $TotalPriceWithoutDiscount;
 
             $discounted_price = Cart::withoutGlobalScope('cookie_id')
                 ->where('user_id', $user->id)
@@ -43,6 +53,8 @@ class CartController extends Controller
                 ->where('status', 0)->get()->sum('quantity');
         }
 
+//        $data = $cartItems;
+//        return $data;
         $data = [
             'total_count' => $totalCount,
             'discounted_price' => $discounted_price,
@@ -53,20 +65,20 @@ class CartController extends Controller
         return ApiResponse::sendResponse(200, '', $data);
 
 
-        return ApiResponse::sendResponse(200, 'لا توجد منتجات في السلة', []);
+//        return ApiResponse::sendResponse(200, 'لا توجد منتجات في السلة', []);
     }
 
 
     public function store(Request $request)
     {
+        $user_id = auth()->user()->id;
         $request->validate([
-            'user_id' => 'nullable|exists:users,id',
+//            'user_id' => 'nullable|exists:users,id',
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
             'color_id' => 'nullable|exists:colors,id', // Assuming you have a colors table
         ]);
 
-        $user_id = $request->user_id;
         $product = Product::findOrFail($request->product_id);
         $quantity = $request->quantity;
         $color_id = $request->color_id;

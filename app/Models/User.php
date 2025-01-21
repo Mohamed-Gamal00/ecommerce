@@ -53,25 +53,6 @@ class User extends Authenticatable
     ];
 
     /* new */
-
-    protected static function booted()
-    {
-        static::created(function ($user) {
-            do {
-                $token = encrypt(Str::random(60));
-                $tokenExists = UserToken::where('token', $token)->exists();
-            } while ($tokenExists);
-            $user->userToken()->create([
-                'token' => $token,
-            ]);
-        });
-    }
-
-    public function userToken()
-    {
-        return $this->hasOne(UserToken::class, 'user_id', 'id');
-    }
-
     public function verificationCode()
     {
         return $this->hasOne(User_verfication::class, 'user_id', 'id');
@@ -79,10 +60,12 @@ class User extends Authenticatable
 
     public function wishlistProducts()
     {
-        return $this->belongsToMany(Product::class,
+        return $this->belongsToMany(
+            Product::class,
             'wishlist_products_user',
             'user_id',
-            'product_id');
+            'product_id'
+        );
     }
 
     public function returnProducts()
@@ -119,6 +102,4 @@ class User extends Authenticatable
 
         return asset('storage/' . $this->image);
     }
-
-
 }
