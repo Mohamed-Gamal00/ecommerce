@@ -43,6 +43,7 @@ use App\Http\Controllers\Api\StaticPagesController;
    | be assigned to the "api" middleware group. Make something great!
    |
    */
+
 Route::middleware(['changeLanguage'])->group(function () {
 
     Route::middleware('api.auth')->get('/user', function (Request $request) {
@@ -50,7 +51,7 @@ Route::middleware(['changeLanguage'])->group(function () {
     });
 
 
-###########################################################################-- User Profile
+    ###########################################################################-- User Profile
     Route::middleware('api.auth')->group(function () {
         #----------------------------------------------------------------------------------- Personal Info
         Route::post('change-personal-info', [PersonalInfoController::class, 'changePersonalInfo']);
@@ -91,12 +92,10 @@ Route::middleware(['changeLanguage'])->group(function () {
         /* المرتجعات */
         Route::get('/user-return-orders', [\App\Http\Controllers\Api\UserOrdersController::class, 'returns']);
         Route::post('/user-return-orders/store', [\App\Http\Controllers\Api\UserOrdersController::class, 'store']);
-
-
     });
 
     Route::get('/shipping-info', [CheckoutController::class, 'shippingInfo']);
-###########################################################################-- Authentication
+    ###########################################################################-- Authentication
     Route::controller(UserAuthController::class)->group(function () {
         Route::post('register', 'register');
         Route::post('login', 'login');
@@ -106,71 +105,71 @@ Route::middleware(['changeLanguage'])->group(function () {
     });
 
 
-###########################################################################-- Get All Countries
-// Route::get('get-countries', [CountriesController::class, 'allCountries']);
+    ###########################################################################-- Get All Countries
+    // Route::get('get-countries', [CountriesController::class, 'allCountries']);
 
-###########################################################################-- Get All Countries
+    ###########################################################################-- Get All Countries
     Route::get('get-cities', [CitiesController::class, 'allCities']);
 
-####################################### Settings #############################################
+    ####################################### Settings #############################################
     Route::get('settings', [SettingsController::class, 'settings']);
 
 
-###########################################################################-- Get All Top Products
+    ###########################################################################-- Get All Top Products
     Route::get('get-top-products', [TopSellingProductsController::class, 'topProducts']);
     Route::get('get-all-top-products', [TopSellingProductsController::class, 'allTopProducts']);
 
 
-###########################################################################-- Get latest Product
+    ###########################################################################-- Get latest Product
     Route::get('get-latest-products', [LatestProductController::class, 'latestProducts']);
     Route::get('get-all-latest-products', [LatestProductController::class, 'allLatestProducts']);
 
-###########################################################################-- Get All Main Categories
+    ###########################################################################-- Get All Main Categories
     Route::get('get-main-categories', [MainCategoriesController::class, 'mainCategories']);
     Route::get('get-all-categories', [MainCategoriesController::class, 'allMainCategories']);
     Route::get('get-sub-categories/{mainCateory}', [MainCategoriesController::class, 'subMainCategories']);
 
 
-###########################################################################-- Get All Banners
+    ###########################################################################-- Get All Banners
     Route::get('get-header-banners', [AllBannersController::class, 'headerBanners']);
     Route::get('get-all-banners', [AllBannersController::class, 'allBanners']);
 
-###########################################################################-- Get Discounts
+    ###########################################################################-- Get Discounts
     Route::get('discounts', [DiscountsController::class, 'discounts']);
     Route::get('all-discounts', [DiscountsController::class, 'allDiscounts']);
 
-###########################################################################-- Search Product
+    ###########################################################################-- Search Product
     Route::get('search', [SearchProductController::class, 'search']);
 
-###########################################################################-- Search Product
+    ###########################################################################-- Search Product
     Route::get('filter', [FilterProductsController::class, 'filterProducts']);
 
-###########################################################################-- Get Colors
+    ###########################################################################-- Get Colors
     Route::get('colors', ColorsController::class);
 
-###########################################################################-- Get Brands
+    ###########################################################################-- Get Brands
     Route::get('brands', BrandsController::class);
 
-###########################################################################-- Get Products
+    ###########################################################################-- Get Products
     Route::get('products/{category_id}', AllProductsController::class);
 
-###########################################################################-- Product Details Page
+    ###########################################################################-- Product Details Page
     Route::get('product-details/{id}', [ProductDetailsController::class, 'getProductDetails']);
     Route::get('product-colors/{id}', [ProductDetailsController::class, 'productColors']);
     Route::get('product-features/{id}', [ProductDetailsController::class, 'productFeatures']);
     Route::get('related-products/{id}', [ProductDetailsController::class, 'relatedProducts']);
 
-###########################################################################-- Currency
+    ###########################################################################-- Currency
     Route::get('default-currency', [CurrenciesController::class, 'defaultCurrency']);
     Route::get('all-currencies', [CurrenciesController::class, 'allCurrencies']);
 
-###########################################################################-- Contact Us
-    Route::post('contact-us', [ContactUsController::class, 'sendMessage']);
+    ###########################################################################-- Contact Us
+    // Route::post('contact-us', [ContactUsController::class, 'sendMessage']);
 
-###########################################################################-- Create New Guest
+    ###########################################################################-- Create New Guest
     Route::post('create-guest', [GuestController::class, 'createGuest']);
 
-###########################################################################-- Favorite Products
+    ###########################################################################-- Favorite Products
     Route::get('all-user-fav-products', [GetAllFavProductsController::class, 'userFavProducts'])->middleware('api.auth');
     Route::post('user-fav-product-add-or-delete', [AddToFavProductsController::class, 'userAddFavProducts'])->middleware('api.auth');
 
@@ -180,12 +179,12 @@ Route::middleware(['changeLanguage'])->group(function () {
     Route::get('check-if-product-exists', [AddToFavProductsController::class, 'checkIfProductExists']);
 
 
-############################################ orders ########################################
+    ############################################ orders ########################################
     Route::post('store-bulk-order', [\App\Http\Controllers\Api\BulkOrderController::class, 'store']);
     Route::post('store-represintative-order', [\App\Http\Controllers\Api\RepresentativeOrderController::class, 'storeorder']);
 
-############################################ GUEST ##########################################
-############################################ cart ##########################################
+    ############################################ GUEST ##########################################
+    ############################################ cart ##########################################
 
     Route::middleware('guest.header')->group(function () {
         Route::prefix('guest-cart')->group(function () {
@@ -196,7 +195,6 @@ Route::middleware(['changeLanguage'])->group(function () {
             Route::get('/total-price', [GuestCartController::class, 'guestGetTotalPrice']);
             Route::get('/total-quantity', [GuestCartController::class, 'guestGetTotalQuantity']);
             Route::get('/', [GuestCartController::class, 'guestIndex']);
-
         });
         Route::post('/guest-checkout', [\App\Http\Controllers\Api\guest\CheckoutController::class, 'guestCheckout']);
         Route::post('/guest-check-discount', \App\Http\Controllers\Api\guest\GuestCheckDiscountController::class);
@@ -209,12 +207,10 @@ Route::middleware(['changeLanguage'])->group(function () {
         /* المرتجعات */
         Route::get('/guest-return-orders', [\App\Http\Controllers\Api\guest\GuestOrdersController::class, 'returns']);
         Route::post('/guest-return-orders/store', [\App\Http\Controllers\Api\guest\GuestOrdersController::class, 'store']);
-
-
     });
 
-//
-############################################ static pages ########################################
+    //
+    ############################################ static pages ########################################
 
     Route::get('static-pages', [StaticPagesController::class, 'static_pages']);
 
