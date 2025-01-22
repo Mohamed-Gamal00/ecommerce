@@ -9,24 +9,26 @@ use App\Http\Requests\Api\RegisterRequest;
 use App\Models\User;
 use App\Models\User_verfication;
 use App\Services\SMSGateways\moraSms;
+use App\Services\SMSGateways\TelephoneVerification;
 use App\Services\UserService;
 use App\Services\VerificationServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
-
+use Illuminate\Support\Facades\Validator;
 
 class UserAuthController extends Controller
 {
     protected $sms_service;
     protected $moraSms;
     protected $userService;
+    protected $telephoneVerification;
 
-    public function __construct(VerificationServices $services, moraSms $moraSmsGateway, UserService $userService)
+    public function __construct(VerificationServices $services, moraSms $moraSmsGateway,TelephoneVerification $telephoneVerification , UserService $userService)
     {
         $this->sms_service = $services;
         $this->moraSms = $moraSmsGateway;
         $this->userService = $userService;
+        $this->telephoneVerification = $telephoneVerification;
     }
 
     public function register(RegisterRequest $request)
@@ -39,7 +41,7 @@ class UserAuthController extends Controller
             'verification_required' => true,
             'user_id' => $user->id,
         ];
-        return $this->handleTelephoneVerification($user, $data);
+        return $this->telephoneVerification->SendVerificationCode($user, $data);
     }
 
     public function verifyCode(Request $request)
@@ -58,7 +60,7 @@ class UserAuthController extends Controller
         if ($this->userService->isVerificationCodeExpired($user)) {
             return ApiResponse::sendResponse(403, "انتهت صلاحية رمز التحقق. يرجى طلب واحد جديدة.");
         }
-        
+
         $isValidCode = $this->sms_service->checkOTPCodePassword($user->id, $verificationData['code']);
 
         if ($isValidCode) {
@@ -105,7 +107,7 @@ class UserAuthController extends Controller
             'verification_required' => true,
             'user_id' => $user->id,
         ];
-        return $this->handleTelephoneVerification($user, $data);
+        return $this->telephoneVerification->SendVerificationCode($user, $data);
     }
 
 
@@ -129,7 +131,7 @@ class UserAuthController extends Controller
 
     public function resendVerifyCode(Request $request)
     {
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'user_id' => 'required',
         ]);
 
@@ -144,20 +146,8 @@ class UserAuthController extends Controller
         }
 
         $data = ['user_id' => $user->id];
-        return $this->handleTelephoneVerification($user, $data);
+        return $this->telephoneVerification->SendVerificationCode($user, $data);
     }
 
-    public function handleTelephoneVerification($user, $data)
-    {
-        $verificationData = $this->sms_service->setVerificationCode($user->id);
-        $message = $this->sms_service->getSMSVerifyMessageByAppName($verificationData->code);
-        // $smsSent = $this->moraSms->send_sms($user->telephone, $message);
-        $smsSent = true;
 
-        if ($smsSent) {
-            return ApiResponse::sendResponse(200, translateWithHTMLTags($message), $data);
-        } else {
-            return ApiResponse::sendResponse(500, "Failed to send verification SMS. Please try again.");
-        }
-    }
 }
