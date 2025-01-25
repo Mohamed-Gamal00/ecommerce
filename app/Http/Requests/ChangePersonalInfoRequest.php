@@ -39,10 +39,10 @@ class ChangePersonalInfoRequest extends FormRequest
         $user = request()->user();
 
         return [
-                'first_name' => ['string', 'max:255'],
-                'last_name' => ['string', 'max:255'],
-                'phone_number' => ['numeric'],
-                'email' => ['string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'first_name' => ['string', 'max:255'],
+            'last_name' => ['string', 'max:255'],
+            'phone_number' => ['required', 'regex:/^(5\d{8}|(00966|966)5\d{8})$/',],
+            'email' => ['string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
         ];
     }
 }

@@ -96,10 +96,8 @@ class User extends Authenticatable
     public function getImageUrlAttribute()
     {
         if (!$this->image) {
-            return asset('front/images/user-image.jpg');
+            return url('front/images/user-image.jpg');
         }
-
-
-        return asset('storage/' . $this->image);
+        return url('storage/' . $this->image);
     }
 }

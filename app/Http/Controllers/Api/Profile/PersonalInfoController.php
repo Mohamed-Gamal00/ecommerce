@@ -18,6 +18,13 @@ class PersonalInfoController extends Controller
 {
     use Helper;
 
+    public function getUserInfo(Request $request)
+    {
+        $user = $request->user();
+
+        return ApiResponse::sendResponse(200, 'success', UserInfoResource::make($user));
+    }
+
     public function changePersonalInfo(ChangePersonalInfoRequest $request)
     {
         $request->validated();
@@ -38,7 +45,7 @@ class PersonalInfoController extends Controller
             'email' => $user->email
         ];
 
-        return ApiResponse::sendResponse(200, 'Personal Info Changed Successfully', $data);
+        return ApiResponse::sendResponse(200, 'success', $data);
     }
 
     public function changePassword(Request $request)
@@ -53,7 +60,7 @@ class PersonalInfoController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
-        return ApiResponse::sendResponse(200, 'Password Changed Successfully', []);
+        return ApiResponse::sendResponse(200, 'success', []);
     }
 
     public function changeProfileImage(Request $request)
@@ -61,6 +68,7 @@ class PersonalInfoController extends Controller
         $request->validate([
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+        
         $user = $request->user();
 
         $oldImage = $user->image;
@@ -84,13 +92,6 @@ class PersonalInfoController extends Controller
             'image' => $user->image_url
         ];
 
-        return ApiResponse::sendResponse(200, 'Profile Image Updated Successfully', $data);
-    }
-
-    public function getUserInfo(Request $request)
-    {
-        $user = $request->user();
-
-        return ApiResponse::sendResponse(200, 'User Personal Info Retrieved Successfully', UserInfoResource::make($user));
+        return ApiResponse::sendResponse(200, 'success', $data);
     }
 }
