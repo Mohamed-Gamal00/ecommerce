@@ -10,13 +10,13 @@
 
 @section('section')
 
-    <div class="row font-size-20">
+
+    <div class="row font-size-20 mb-3 p-3">
         اسم العميل
-        : {{ $order->addresses->first()->first_name . ' ' . $order->addresses->first()->last_name }}
+        : {{ $order->user->addresses->first()->first_name  . ' ' . $order->user->addresses->first()->last_name }}
 
-        - {{ __('profile.ORDER_NUMBER') }} : {{ $order->number . '#' }}
+        - {{('رقم الطلب') }} : {{ $order->number . '#' }}
     </div>
-
     <div class="row">
         @forelse($order->orderItems as $item)
             <div class="col-xl-4">
@@ -76,22 +76,22 @@
                             <div class="feed-item-list">
                                 <span class="date">اسم العميل : </span>
                                 <span
-                                    class="activity-text fw-bold">{{ $order->addresses->first()->first_name . ' ' . $order->addresses->first()->last_name }}</span>
+                                    class="activity-text fw-bold">{{ $order->user->addresses->first()->first_name . ' ' . $order->user->addresses->first()->last_name }}</span>
                             </div>
                         </li>
 
                         <li class="feed-item">
                             <div class="feed-item-list">
                                 <span class="date">رقم الهاتف: </span>
-                                <span class="activity-text fw-bold">{{ "{$order->addresses->first()->phone_number} -" }}
-                                    {{ $order->addresses->first()->country->phone_code . '+' }}</span>
+                                <span class="activity-text fw-bold">{{ "{$order->user->addresses->first()->phone_number}" }}</span>
+                                    {{-- {{ $order->user->addresses->first()->country->phone_code . '+' }}--}}
                             </div>
                         </li>
 
                         <li class="feed-item">
                             <div class="feed-item-list">
                                 <span class="date">البريد الالكتروني</span>
-                                <span class="activity-text fw-bold">{{ $order->addresses->first()->email }}</span>
+                                <span class="activity-text fw-bold">{{ $order->user->addresses->first()->email }}</span>
                             </div>
                         </li>
 
@@ -100,21 +100,21 @@
                             <div class="feed-item-list">
                                 <span class="date">الدولة</span>
                                 <span
-                                    class="activity-text fw-bold">{{ $order->addresses->first()->country->name_ar }}</span>
+                                    class="activity-text fw-bold">{{ $order->user->addresses->first()->country->name_ar }}</span>
                             </div>
                         </li>
 
                         <li class="feed-item">
                             <div class="feed-item-list">
                                 <span class="date">المدينة</span>
-                                <span class="activity-text fw-bold">{{ $order->addresses->first()->city->name_ar }}</span>
+                                <span class="activity-text fw-bold">{{ $order->user->addresses->first()->city->name_ar }}</span>
                             </div>
                         </li>
 
                         <li class="feed-item">
                             <div class="feed-item-list">
                                 <span class="date">العنوان</span>
-                                <span class="activity-text fw-bold">{{ $order->addresses->first()->address }}</span>
+                                <span class="activity-text fw-bold">{{ $order->user->addresses->first()->address }}</span>
                             </div>
                         </li>
 

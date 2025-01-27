@@ -21,7 +21,7 @@ use App\Http\Controllers\Api\SearchProductController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\TopSellingProductsController;
 use App\Http\Controllers\Api\UserAuthController;
-use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\Api\ContactUsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -166,7 +166,7 @@ Route::middleware(['changeLanguage'])->group(function () {
     Route::get('all-currencies', [CurrenciesController::class, 'allCurrencies']);
 
     ###########################################################################-- Contact Us
-    // Route::post('contact-us', [ContactUsController::class, 'sendMessage']);
+    Route::post('contact-us', [ContactUsController::class, 'sendMessage']);
 
     ###########################################################################-- Create New Guest
     Route::post('create-guest', [GuestController::class, 'createGuest']);

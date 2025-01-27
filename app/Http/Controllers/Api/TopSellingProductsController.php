@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductsResource;
 use App\Http\Resources\ViewProductsResource;
 use App\Models\Guest;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -40,12 +41,26 @@ class TopSellingProductsController extends Controller
             return ApiResponse::sendResponse(200, 'you must determind if you guest or user');
         }
 
-        $topSellingProducts = Product::select('products.*', DB::raw('SUM(order_items.quantity) as total_quantity_sold'))
-            ->join('order_items', 'products.id', '=', 'order_items.product_id')
-            ->groupBy('products.id')
-            ->orderByDesc('total_quantity_sold')
+        // $topSellingProducts = Product::select('products.*', DB::raw('SUM(order_items.quantity) as total_quantity_sold'))
+        //     ->join('order_items', 'products.id', '=', 'order_items.product_id')
+        //     ->groupBy('products.id')
+        //     ->orderByDesc('total_quantity_sold')
+        //     ->limit(50)
+        //     ->paginate(10);
+
+        $topSellingProducts = Product::select('products.*', 'sales.total_quantity_sold')
+            ->joinSub(
+                OrderItem::select('product_id', DB::raw('SUM(quantity) as total_quantity_sold'))
+                    ->groupBy('product_id'),
+                'sales',
+                'products.id',
+                '=',
+                'sales.product_id'
+            )
+            ->orderByDesc('sales.total_quantity_sold')
             ->limit(50)
             ->paginate(10);
+
 
         if (count($topSellingProducts) > 0) {
             if ($topSellingProducts->total() > $topSellingProducts->perPage()) {
