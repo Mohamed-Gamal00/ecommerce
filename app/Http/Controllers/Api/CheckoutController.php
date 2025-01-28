@@ -97,32 +97,6 @@ class CheckoutController extends Controller
         }
     }
 
-    // public function total($user): float
-    // {
-    //     /* السعر بعد الخصم لو فيه خصم*/
-    //     return Cart::with('product')->withoutGlobalScope('cookie_id')
-    //         ->where('user_id', $user->id)->where('status', 0)->get()
-    //         ->sum(function ($item) {
-    //             if ($item->product->discount_price) {
-    //                 return $item->quantity * ($item->discounted_price ?? $item->product->discount_price);
-    //             } else {
-
-    //                 return $item->quantity * ($item->discounted_price ?? $item->product->price);
-    //             }
-    //         });
-    // }
-
-
-    // public function totalBeforeDiscount($user): float
-    // {
-    //     return Cart::with('product')->withoutGlobalScope('cookie_id')
-    //         ->where('user_id', $user->id)->where('status', 0)->get()->sum(function ($item) {
-    //             return $item->quantity * $item->product->discount_price ?? $item->product->price;
-    //         });
-    // }
-
-
-
     public function shippingInfo(Request $request)
     {
 
