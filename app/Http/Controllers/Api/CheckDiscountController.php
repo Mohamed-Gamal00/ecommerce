@@ -7,12 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\DiscountCode;
 use App\Models\UserDiscountCode;
-use App\Repositories\Cart\CartRepository;
 use Illuminate\Http\Request;
 
 class CheckDiscountController extends Controller
 {
-    public function __invoke(Request $request, CartRepository $cart)
+    public function __invoke(Request $request)
     {
 
 
@@ -26,20 +25,20 @@ class CheckDiscountController extends Controller
             ->where('status', 'active')
             ->where('number_of_used', '>', 0)
             ->first();
-//        return $discountCode;
+        //        return $discountCode;
 
         if (!$discountCode) {
             return response()->json([
                 'message' => 'لقد انتهت صلاحية رمز الخصم هذا أو لم يعد صالحًا.'
             ], 400);
         }
-//        if (str_contains(request()->path(), 'api')) {
-//            return Cart::getCookieIdApi();
-//        } else {
-//            return 'cuhk';
-//        }
+        //        if (str_contains(request()->path(), 'api')) {
+        //            return Cart::getCookieIdApi();
+        //        } else {
+        //            return 'cuhk';
+        //        }
 
-//        return Cart::getCookieIdApi();
+        //        return Cart::getCookieIdApi();
         $userDiscountCode = UserDiscountCode::where([
             'cookie_id' => Cart::getCookieIdApi(),
             'discount_id' => $discountCode->id
@@ -86,18 +85,18 @@ class CheckDiscountController extends Controller
 
                 // Set the discounted price
                 // نسبة الخصم علي المنتج الواحد
+                
                 $originalPrice = $item->product->discount_price ?? $item->product->price;
                 $item->discounted_price = max(0, $originalPrice - $discountAmount);
                 $item->save();
             }
         }
-        
+
         return response()->json([
             'message' => 'Discount code applied successfully.',
             'discount_code' => $discountCode->code,
             'discount_price' => $discountCode->price,
-//            'cart' => $cartItems
+            //            'cart' => $cartItems
         ], 200);
     }
-
 }

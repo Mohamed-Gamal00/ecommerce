@@ -165,7 +165,11 @@ class CheckoutServices
     {
         return Cart::with('product')->withoutGlobalScope('cookie_id')
             ->where('user_id', $user->id)->where('status', 0)->get()->sum(function ($item) {
-                return $item->quantity * $item->product->discount_price ?? $item->product->price;
+                if ($item->product->discount_price) {
+                    return $item->quantity * $item->product->discount_price;
+                } else {
+                    return $item->quantity * $item->product->price;
+                }
             });
     }
 
@@ -185,7 +189,7 @@ class CheckoutServices
             $addressData['email'] = $user->email;
             $order->addresses()->create($addressData);
         }
-            // هشحن ل عنوان متسجل
+        // هشحن ل عنوان متسجل
         else {
             $UserAddress = UserAddress::where('id', $request->user_address)->first();
             if ($UserAddress) {
@@ -245,7 +249,7 @@ class CheckoutServices
         }
     }
 
-    public function checkPaymentMethod($request,$order)
+    public function checkPaymentMethod($request, $order)
     {
         if ($request->payment_method == 'card_payment') {
 
@@ -261,6 +265,4 @@ class CheckoutServices
             ], 201);
         }
     }
-
-
 }

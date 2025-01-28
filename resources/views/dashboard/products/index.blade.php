@@ -56,7 +56,7 @@
                                                     class="img-thumbnail rounded me-2" width="50" height="50"
                                                     src="{{ $product->image_url }}" data-holder-rendered="true">
                                             </td>
-                                            {{-- <td data-field="id">{{ $product->CurrentNameLang }}</td> --}}
+                                            <td data-field="id">{{ $product->CurrentNameLang }}</td>
                                             {{-- <td data-field="id">
                                                 @if ($product->status == 'active')
                                                     نشط
@@ -64,7 +64,7 @@
                                                     غير نشط
                                                 @endif
                                             </td> --}}
-                                            <td data-field="id">{{ $product->availability->CurrentNameLang }}</td>
+                                            {{-- <td data-field="id">{{ $product->availability->CurrentNameLang }}</td> --}}
                                             <td data-field="name">{{ $product->price }}</td>
                                             {{-- <td data-field="name">{{ $product->discount_price ?? '-' }}</td> --}}
                                             <td data-field="name">{{ $product->weight }}</td>

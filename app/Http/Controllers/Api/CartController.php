@@ -57,7 +57,7 @@ class CartController extends Controller
 //        return $data;
         $data = [
             'total_count' => $totalCount,
-            'discounted_price' => $discounted_price,
+            'discounted_price' => $discounted_price,  // قيمة الخصم علي المنتج
             'total_price' => $TotalPrice,
             'total_quantity' => $totalQuantity,
             'items' => CartResource::collection($cartItems) ?? null,

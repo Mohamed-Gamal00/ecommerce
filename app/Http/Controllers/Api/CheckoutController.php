@@ -50,6 +50,7 @@ class CheckoutController extends Controller
 
         $user = $request->user();
 
+        // handle requests
         try {
 
             $this->checkOutservice->checkShippingSelectOptions($request);
@@ -58,20 +59,24 @@ class CheckoutController extends Controller
 
             $shipping_price = $this->checkOutservice->calculateShippingPrice($request, $user);
 
+            $cartItems = $this->checkOutservice->getCartItems($user);
+
+            if ($cartItems->isEmpty()) {
+                return ApiResponse::sendResponse(200, 'لا يمكن اتمام الطلب والسلة فارغة');
+            }
         } catch (\Exception $e) {
             return ApiResponse::sendResponse(400, $e->getMessage());
         }
 
-        $cartItems = $this->checkOutservice->getCartItems($user);
 
-        if ($cartItems->isEmpty()) {
-            return ApiResponse::sendResponse(200, 'لا يمكن اتمام الطلب والسلة فارغة');
-        }
+        // handle database proccessing
         DB::beginTransaction();
         try {
             $this->checkOutservice->checkJoinNews($request, $user);
 
             $order = $this->checkOutservice->createOrder($request, $user, $shipping_price);
+
+            return $order;
 
             $this->checkOutservice->createOrderItems($order, $user);
 
@@ -83,25 +88,9 @@ class CheckoutController extends Controller
 
             $this->checkOutservice->sendNotificationToAdmin($order);
 
-
-
             DB::commit();
 
             return $this->checkOutservice->checkPaymentMethod($request, $order);
-
-            // if ($request->payment_method == 'card_payment') {
-
-            //     $paymentLink = route('user.payment', ['order_number' => $order->number]);
-
-            //     return response()->json([
-            //         'message' => 'Order created successfully',
-            //         'payment_url' => $paymentLink
-            //     ], 201);
-            // } else {
-            //     return response()->json([
-            //         'message' => 'Order created successfully',
-            //     ], 201);
-            // }
         } catch (Throwable $e) {
             DB::rollBack();
             return response()->json(['message' => 'Order creation failed', 'error' => $e->getMessage()], 500);
