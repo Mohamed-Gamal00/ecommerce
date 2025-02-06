@@ -25,7 +25,7 @@ trait Helper
     public function uploadedLogo($request, $fileName, $dirName)
     {
         // if request hasn't it will make this method return null and if not it will return the path
-        if (!$request->hasFile('logo')) {
+        if (!$request->hasFile($fileName)) {
             return;
         }
 

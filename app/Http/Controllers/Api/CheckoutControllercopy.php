@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\Notification;
 use Symfony\Component\Intl\Countries;
 use Throwable;
 
-class CheckoutController extends Controller
+class CheckoutControllerCopy extends Controller
 {
 
     public function usercheckout(Request $request, Order $order)
