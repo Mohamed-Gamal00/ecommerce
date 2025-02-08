@@ -19,10 +19,10 @@ class CartResource extends JsonResource
             'name' => $this->product->getCurrentNameLangAttribute(),
             'image' => $this->product->image_url,
             'category' => $this->product->parent->getCurrentNameLangAttribute(),
-            'current_price' => $this->product->price,
+            'price' => $this->product->price,
             'quantity' => $this->quantity,
             'weight' => $this->product->weight,
-            'price_before_discount' => $this->product->price_before_discount,
+            'discount_price' => $this->product->discount_price ?? 0,
             'product_status' => $this->product->availability->getCurrentNameLangAttribute(),
         ];
     }

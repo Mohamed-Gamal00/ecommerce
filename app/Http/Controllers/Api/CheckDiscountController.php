@@ -32,13 +32,7 @@ class CheckDiscountController extends Controller
                 'message' => 'لقد انتهت صلاحية رمز الخصم هذا أو لم يعد صالحًا.'
             ], 400);
         }
-        //        if (str_contains(request()->path(), 'api')) {
-        //            return Cart::getCookieIdApi();
-        //        } else {
-        //            return 'cuhk';
-        //        }
 
-        //        return Cart::getCookieIdApi();
         $userDiscountCode = UserDiscountCode::where([
             'cookie_id' => Cart::getCookieIdApi(),
             'discount_id' => $discountCode->id
@@ -85,7 +79,7 @@ class CheckDiscountController extends Controller
 
                 // Set the discounted price
                 // نسبة الخصم علي المنتج الواحد
-                
+
                 $originalPrice = $item->product->discount_price ?? $item->product->price;
                 $item->discounted_price = max(0, $originalPrice - $discountAmount);
                 $item->save();

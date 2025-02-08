@@ -155,7 +155,6 @@ class CheckoutServices
                 if ($item->product->discount_price) {
                     return $item->quantity * ($item->discounted_price ?? $item->product->discount_price);
                 } else {
-
                     return $item->quantity * ($item->discounted_price ?? $item->product->price);
                 }
             });
