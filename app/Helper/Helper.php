@@ -36,6 +36,8 @@ trait Helper
         return $path;
     }
 
+
+    /* favourit products */
     public function checkIfProductExists(Request $request, $productId = null)
     {
 //        $userId = $request->header('userId');

@@ -168,10 +168,11 @@ Route::middleware(['changeLanguage'])->group(function () {
     ###########################################################################-- Contact Us
     Route::post('contact-us', [ContactUsController::class, 'sendMessage']);
 
-    ###########################################################################-- Create New Guest
+    ########################################################################### Create New Guest
     Route::post('create-guest', [GuestController::class, 'createGuest']);
 
-    ###########################################################################-- Favorite Products
+    ########################################################################### Favorite Products
+
     Route::get('all-user-fav-products', [GetAllFavProductsController::class, 'userFavProducts'])->middleware('auth:user');
     Route::post('user-fav-product-add-or-delete', [AddToFavProductsController::class, 'userAddFavProducts'])->middleware('auth:user');
 
@@ -198,6 +199,7 @@ Route::middleware(['changeLanguage'])->group(function () {
             Route::get('/total-quantity', [GuestCartController::class, 'guestGetTotalQuantity']);
             Route::get('/', [GuestCartController::class, 'guestIndex']);
         });
+        
         Route::post('/guest-checkout', [\App\Http\Controllers\Api\guest\CheckoutController::class, 'guestCheckout']);
         Route::post('/guest-check-discount', \App\Http\Controllers\Api\guest\GuestCheckDiscountController::class);
 
