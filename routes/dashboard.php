@@ -45,8 +45,7 @@ use Illuminate\Support\Facades\Route;
 //=============================================== Dashboard Routes
 
 // Handle login submission
-Route::post('/login', [AdminsController::class, 'login'])->name('admin.login.post');
-
+// Route::post('/login', [AdminsController::class, 'login'])->name('admin.login.post');
 // Handle logout
 
 Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
@@ -228,4 +227,4 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
 
 //----------------------------------------------/Admin login
 Route::view('admin/login', 'admin.auth.login')->middleware('guest:admin')->name('admin.login');
-Route::post('/admin/login', [AdminsController::class, 'login'])->name('admin.login.store');
+Route::post('/admin/login', [AdminsController::class, 'login'])->middleware('guest:admin')->name('admin.login.store');
