@@ -26,7 +26,7 @@ class AdminsController extends Controller
      */
     public function index()
     {
-        //Gate::authorize('admin.view');
+        Gate::authorize('admin.view');
         $admins = $this->adminRepository->getAll();
         return view('dashboard.admins.index', compact('admins'));
     }
@@ -36,7 +36,7 @@ class AdminsController extends Controller
      */
     public function create()
     {
-        //Gate::authorize('admin.create');
+        Gate::authorize('admin.create');
         $rules = Rule::all();
         //$adminRules = $admin->rules.blade.php()->pluck('id')->toArray();
         return view('dashboard.admins.create', \compact('rules'));
@@ -47,7 +47,7 @@ class AdminsController extends Controller
      */
     public function store(Request $request)
     {
-        //Gate::authorize('admin.create');
+        Gate::authorize('admin.create');
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:admins,email',
@@ -72,7 +72,7 @@ class AdminsController extends Controller
      */
     public function edit(string $id)
     {
-        //Gate::authorize('admin.edit');
+        Gate::authorize('admin.edit');
 
         $admin = Admin::findOrFail($id);
         $rules = Rule::all();
@@ -85,7 +85,7 @@ class AdminsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //Gate::authorize('admin.edit');
+        Gate::authorize('admin.edit');
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -103,14 +103,14 @@ class AdminsController extends Controller
      */
     public function destroy(string $id)
     {
-        //Gate::authorize('admin.delete');
+        Gate::authorize('admin.delete');
         $this->adminRepository->delete($id);
         return back()->with('dark', __('messages.ADMIN_DELETED'));
     }
 
     public function ChangePassword(Request $request, $id)
     {
-        //Gate::authorize('admin.change_password');
+        Gate::authorize('admin.change_password');
 
         $request->validate([
             'new_password' => 'required|confirmed|min:6'
