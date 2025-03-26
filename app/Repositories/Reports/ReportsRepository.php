@@ -20,7 +20,6 @@ class ReportsRepository implements ReportInterface
         $query->select(DB::raw('count(*)'));
       }
     ])->latest()
-      ->withoutTrashed()
       ->paginate();
   }
 
