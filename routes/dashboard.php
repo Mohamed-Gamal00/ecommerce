@@ -57,6 +57,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
 
     //-----------------------------------------------------------------------------/ Notifications Page
     Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/read', [NotificationsController::class, 'markAsRead'])->name('notifications.read');
+
 
     //-----------------------------------------------------------------------------/Profile Settings
     Route::get('/profile/edit', [ProfileSettingsController::class, 'index'])->name('profile.settings.index');

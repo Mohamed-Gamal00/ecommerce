@@ -18,7 +18,7 @@ class NotificationMenu extends Component
     public function __construct($count = 10)
     {
         $user = Auth::guard('admin')->user();
-        $this->notifications = $user->notifications()->take($count)->get();
+        $this->notifications = $user->unReadNotifications()->take($count)->get();
 
         $this->newCount = $user->unReadNotifications()->count();
     }
