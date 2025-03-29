@@ -24,8 +24,19 @@ class ProductDetailsResource extends JsonResource
             'category' => [
                 'id' => $this->parent->id,
                 'name' => $this->parent->getCurrentNameLangAttribute(),
-
             ],
+            'choices' => $this->choices->map(function ($choice) {
+                return [
+                    'id' => $choice->id,
+                    'name' => $choice->getCurrentNameLangAttribute(),
+                    'sub_choices' => $choice->children->map(function ($subChoice) {
+                        return [
+                            'id' => $subChoice->id,
+                            'name' => $subChoice->getCurrentNameLangAttribute(),
+                        ];
+                    }),
+                ];
+            }),
             'price_before_discount' => preg_replace('/[A-Z]+/', '', strval(Currency::getCurrencyApi($this->price))),
             'price_after_discount' => preg_replace('/[A-Z]+/', '', strval(Currency::getCurrencyApi($this->discount_price))),
             'currency' => preg_replace('/[0-9.]+/', '', strval(Currency::getCurrencyApi($this->discount_price))),

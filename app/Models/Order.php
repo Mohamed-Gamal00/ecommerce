@@ -102,4 +102,12 @@ class Order extends Model
         return $this->hasOne(OrderAddress::class, 'order_id', 'order')
             ->where('type', '=', 'shipping');
     }
+
+
+    public function choices()
+    {
+        return $this->belongsToMany(Choice::class, 'order_choices')
+            ->withPivot('sub_choice_id')
+            ->withTimestamps();
+    }
 }

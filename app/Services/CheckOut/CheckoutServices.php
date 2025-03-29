@@ -146,6 +146,27 @@ class CheckoutServices
         }
     }
 
+    public function saveUserChoices($order, $request)
+    {
+        // التأكد من أن choice_id موجود
+        if (!$request->has('choice_id')) {
+            throw new \Exception("choice_id is required");
+        }
+
+        foreach ($request->sub_choice_id as $subChoiceId) {
+            DB::table('order_choices')->insert([
+                'order_id' => $order->id,
+                'choice_id' => $request->choice_id,
+                'sub_choice_id' => $subChoiceId, // سيتم إدخال كل قيمة في سطر منفصل
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+
+
+
     public function calculateTotal($user): float
     {
         //السعر بعد الخصم لو فيه خصم

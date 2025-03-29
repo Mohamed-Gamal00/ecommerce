@@ -33,6 +33,10 @@ class UserCheckoutRequest extends FormRequest
             'country_id' => $isAddingNewAddress ? 'required' : 'nullable',
             'city_id' => $isAddingNewAddress ? 'required' : 'nullable',
             'address' => $isAddingNewAddress ? 'required' : 'nullable',
+            'choice_id' => 'required|exists:choices,id',
+            'sub_choice_id' => 'nullable|array',
+            'sub_choice_id.*' => 'exists:choices,id',
+
         ];
     }
 

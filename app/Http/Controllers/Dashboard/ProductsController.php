@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\MainCategory;
 use App\Models\Product;
 use App\Helper\Helper;
+use App\Models\Choice;
 use App\Models\MainCategorySetting;
 use App\Models\ProductAvailability;
 use App\Models\ProductFeature;
@@ -65,10 +66,7 @@ class ProductsController extends Controller
 
     public function fetchChoices(Request $request)
     {
-        $categoryId = $request->get('category_id');
-        $category = MainCategory::findOrFail($categoryId);
-        $choices = $category->choices()->select('choices.id', 'choices.name')->get();
-
+        $choices = Choice::whereNull('parent_id')->with('children')->get();;
         return response()->json($choices);
     }
 
@@ -137,7 +135,7 @@ class ProductsController extends Controller
         // dd($product->images);
         $categories = MainCategory::all();
         $subCategories = MainCategory::whereNull('parent_id')->with('children')->get();
-        // $choices = MainCategory::with('choices')->get();
+        $choices = MainCategory::with('choices')->get();
         $productChoices = $product->choices->pluck('id')->toArray();
         // dd($productChoices);
         $companies = Company::all();

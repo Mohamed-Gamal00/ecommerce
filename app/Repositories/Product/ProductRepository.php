@@ -75,7 +75,6 @@ class ProductRepository implements ProudctInterface
             // }
 
             $product->update($data);
-            $product->subSettings()->sync(request()->input('sub_categories'));
             $product->colors()->sync(request()->post('colors'));
 
             $requestFeatureIds = [];

@@ -67,6 +67,8 @@ class CheckoutController extends Controller
 
             $this->checkOutservice->sendNotificationToAdmin($order);
 
+            $this->checkOutservice->saveUserChoices($order, $request);
+
             DB::commit();
 
             return $this->checkOutservice->checkPaymentMethod($request, $order);
