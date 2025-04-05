@@ -28,7 +28,7 @@ class OrderRepository implements OrderInterface
 
     public function show($id)
     {
-        return $this->order->with('user', 'addresses', 'addresses.country', 'addresses.city', 'orderItems.product', 'orderItems')
+        return $this->order->with('user', 'choices', 'addresses', 'addresses.country', 'addresses.city', 'orderItems.product', 'orderItems')
             ->where('return_order', false)
             ->findOrFail($id);
     }

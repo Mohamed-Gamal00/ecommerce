@@ -24,26 +24,26 @@
                     @endif
                     {{-- Form Start --}}
                     <form class="repeater" action="{{ route('products.store') }}" method="post"
-                          enctype="multipart/form-data">
+                        enctype="multipart/form-data">
                         @csrf
                         <div class="row mb-3 mt-3">
                             <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">اسم المنتج</label>
                             <div class="col-sm-10">
-                                <x-form.input type="text" name="name" value="{{ old('name') }}"/>
+                                <x-form.input type="text" name="name" value="{{ old('name') }}" />
                             </div>
                         </div>
                         <div class="row mb-3 mt-3">
                             <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">اسم المنتج باللغة
                                 الانجليزية</label>
                             <div class="col-sm-10">
-                                <x-form.input type="text" name="name_en" value="{{ old('name_en') }}"/>
+                                <x-form.input type="text" name="name_en" value="{{ old('name_en') }}" />
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">السعر الحالي</label>
                             <div class="col-sm-10">
-                                <x-form.input type="number" name="price" value="{{ old('price') }}"/>
+                                <x-form.input type="number" name="price" value="{{ old('price') }}" />
                             </div>
                         </div>
 
@@ -51,29 +51,28 @@
                             <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">السعر بعد
                                 الخصم</label>
                             <div class="col-sm-10">
-                                <x-form.input type="number" name="discount_price" value="{{ old('discount_price') }}"/>
+                                <x-form.input type="number" name="discount_price" value="{{ old('discount_price') }}" />
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">الوزن (كجم)</label>
                             <div class="col-sm-10">
-                                <x-form.input type="number" name="weight" value="{{ old('weight') }}"/>
+                                <x-form.input type="number" name="weight" value="{{ old('weight') }}" />
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <label for="example-text-input" class="col-sm-2 col-form-label fw-bold">الكميه</label>
                             <div class="col-sm-10">
-                                <x-form.input type="number" name="quantity" value="{{ old('quantity') }}"/>
+                                <x-form.input type="number" name="quantity" value="{{ old('quantity') }}" />
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <label for="example-number-input" class="col-sm-2 col-form-label fw-bold">الوصف</label>
                             <div class="col-sm-10">
-                                <textarea class="form-control" rows="7"
-                                          name="description">{{ old('description') }}</textarea>
+                                <textarea class="form-control" rows="7" name="description">{{ old('description') }}</textarea>
                             </div>
                         </div>
 
@@ -90,7 +89,7 @@
 
                                     </select>
                                     @error('company_id')
-                                    <span class="error">{{ $message }}</span>
+                                        <span class="error">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -130,46 +129,47 @@
 
 
                                 @error('status')
-                                <span class="error">{{ $message }}</span>
+                                    <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
-
 
                         {{-- الخيارات --}}
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label fw-bold">الخيارات</label>
                             <div class="col-sm-10">
-                                <select name="choice_id[]" id="choices" class="form-select colors-select"
-                                        aria-label="الخيارات" multiple>
-                                    {!! getSubCategories($choices) !!}
+                                <select name="choice_id[]" id="choices" class="form-select multi-select" multiple>
+                                    <!-- سيتم تعبئتها ديناميكيًا من خلال الـ JavaScript -->
                                 </select>
                             </div>
                         </div>
 
-
                         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                         <script>
-                            $(document).ready(function () {
-                                $('#category').change(function () {
-                                    var categoryId = $(this).val();
-                                    $.ajax({
-                                        url: '{{ route('fetch.choices') }}', // Define the route to fetch choices
-                                        type: 'GET',
-                                        data: {
-                                            category_id: categoryId
-                                        },
-                                        success: function (response) {
-                                            $('#choices').empty(); // Clear existing choices
-                                            response.forEach(function (choice) {
-                                                $('#choices').append('<option value="' + choice.id + '">' +
-                                                    choice.name + '</option>');
+                            $(document).ready(function() {
+                                $.ajax({
+                                    url: '{{ route('fetch.choices') }}', // تأكد أن هذا يعيد فقط الخيارات الرئيسية
+                                    type: 'GET',
+                                    success: function(response) {
+                                        let choicesDropdown = $('#choices');
+                                        choicesDropdown.empty(); // تفريغ القائمة قبل الإضافة
+
+                                        response.forEach(function(choice) {
+                                            let mainOption = $('<option>', {
+                                                value: choice.id,
+                                                text: choice.name
                                             });
-                                        }
-                                    });
+
+                                            choicesDropdown.append(mainOption); // إضافة الخيار الرئيسي فقط
+                                        });
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error("Error fetching choices:", error);
+                                    }
                                 });
                             });
                         </script>
+
 
 
                         <div class="row mb-3">
@@ -177,14 +177,14 @@
                             <div class="col-sm-10">
                                 <select class="form-select" name="status" aria-label="Default select example">
                                     @error('status')
-                                    <span class="error">{{ $message }}</span>
+                                        <span class="error">{{ $message }}</span>
                                     @enderror
                                     <option hidden disabled>اختر حالة المنتج</option>
                                     <option selected value="active">نشط</option>
                                     <option value="archived">غير نشط</option>
                                 </select>
                                 @error('status')
-                                <span class="error">{{ $message }}</span>
+                                    <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -193,7 +193,7 @@
                             <label class="col-sm-2 col-form-label fw-bold">حالة التوفر</label>
                             <div class="col-sm-10">
                                 <select class="form-select" name="product_availability_id"
-                                        aria-label="Default select example">
+                                    aria-label="Default select example">
                                     <option value="" disabled selected hidden>اختر حالة التوفر للمنتج</option>
                                     @forelse($availability_status as $availability)
                                         <option value="{{ $availability->id }}">{{ $availability->name }}</option>
@@ -201,7 +201,7 @@
                                     @endforelse
                                 </select>
                                 @error('product_availability_id')
-                                <span class="error">{{ $message }}</span>
+                                    <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -211,13 +211,13 @@
                             <div class="col-sm-10">
                                 <select class="form-select" name="is_special" aria-label="Default select example">
                                     @error('is_special')
-                                    <span class="error">{{ $message }}</span>
+                                        <span class="error">{{ $message }}</span>
                                     @enderror
                                     <option value="1">مميز</option>
                                     <option value="0" selected>عادي</option>
                                 </select>
                                 @error('status')
-                                <span class="error">{{ $message }}</span>
+                                    <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -228,14 +228,14 @@
                                 الرئيسية</label>
                             <div class="col-sm-10">
                                 <input type="file" class="form-control" name="image" id="imageUpload"
-                                       data-buttonname="btn-secondary" accept="image/*">
+                                    data-buttonname="btn-secondary" accept="image/*">
                                 @error('image')
-                                <span class="error">{{ $message }}</span>
+                                    <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
                         <img src="#" id="imagePreview" class="img-thumbnail rounded mb-5" alt="Preview"
-                             style="width: 150px; display: none;">
+                            style="width: 150px; display: none;">
                         {{-- الصور --}}
                         <div class="form-body">
                             <button type="button" class="btn btn-success" onclick="addProductImageUpload()">المزيد من
@@ -254,15 +254,15 @@
                             <label class="col-sm-2 col-form-label fw-bold">الألوان</label>
                             <div class="col-sm-10">
 
-                                <select name="colors[]" id="subcategory1" class="form-select colors-select"
-                                        aria-label="الألوان" multiple>
+                                <select name="colors[]" id="subcategory1" class="form-select multi-select"
+                                    aria-label="الألوان" multiple>
                                     @foreach ($colors as $color)
                                         <option value="{{ $color->id }}">{{ $color->name }}</option>
                                     @endforeach
                                 </select>
 
                                 @error('colors')
-                                <span class="error">{{ $message }}</span>
+                                    <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -277,9 +277,9 @@
                                                 <div class="mb-3 col-lg-2">
                                                     <label class="form-label fw-bold" for="name">الاسم</label>
                                                     <input type="text" id="name" name="feature_name"
-                                                           class="form-control" placeholder="اكتب اسم الميزه"/>
+                                                        class="form-control" placeholder="اكتب اسم الميزه" />
                                                     @error('feature_name')
-                                                    <span class="error">{{ $message }}</span>
+                                                        <span class="error">{{ $message }}</span>
                                                     @enderror
                                                 </div>
 
@@ -287,31 +287,31 @@
                                                     <label class="form-label fw-bold" for="name">الاسم
                                                         بالانجليزي</label>
                                                     <input type="text" id="name" name="feature_name_en"
-                                                           class="form-control" placeholder="الاسم بالانجلليزي"/>
+                                                        class="form-control" placeholder="الاسم بالانجلليزي" />
                                                     @error('feature_name_en')
-                                                    <span class="error">{{ $message }}</span>
+                                                        <span class="error">{{ $message }}</span>
                                                     @enderror
                                                 </div>
                                                 <!-- end col -->
                                                 <div class="mb-3 col-lg-4">
                                                     <label class="form-label fw-bold">الميزه</label>
                                                     <input type="text" name="feature_description" class="form-control"
-                                                           placeholder="اكتب وصف الميزه"/>
+                                                        placeholder="اكتب وصف الميزه" />
                                                     @error('feature_description')
-                                                    <span class="error">{{ $message }}</span>
+                                                        <span class="error">{{ $message }}</span>
                                                     @enderror
                                                 </div>
                                                 <div class="col-lg-2 col-sm-4 align-self-center">
                                                     <label class="form-label fw-bold"></label>
                                                     <div class="d-grid">
                                                         <input data-repeater-delete type="button"
-                                                               class="btn btn-primary mb-2" value="مسح"/>
+                                                            class="btn btn-primary mb-2" value="مسح" />
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <input data-repeater-create type="button" class="btn btn-success mt-2 mt-sm-0"
-                                               value="اضافة المزيد"/>
+                                            value="اضافة المزيد" />
                                     </div>
                                 </div>
                             </div>
@@ -424,13 +424,13 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-        $(document).ready(function () {
-            $('.colors-select').select2();
+        $(document).ready(function() {
+            $('.multi-select').select2();
         });
     </script>
 
     <script>
-        document.getElementById('category').addEventListener('change', function () {
+        document.getElementById('category').addEventListener('change', function() {
             var categoryId = this.value;
             var subcategorySelect = document.getElementById('subcategory');
 
@@ -460,14 +460,14 @@
     </script>
 
     <script>
-        window.onload = function () {
+        window.onload = function() {
             addProductImageUpload();
         };
 
         function previewImage(event, index) {
             const input = event.target;
             const reader = new FileReader();
-            reader.onload = function () {
+            reader.onload = function() {
                 const preview = document.getElementById(`preview-${index}`);
                 preview.src = reader.result;
             };
@@ -491,7 +491,7 @@
             const newInput = document.createElement("div");
             newInput.classList.add("image-upload-one");
             newInput.innerHTML = `
-                          <div class="image-upload-container"> 
+                          <div class="image-upload-container">
                             <div class="image-upload-one" id="image-upload-${uploadIndex}">
                               <div class="center">
                                 <div class="form-input">

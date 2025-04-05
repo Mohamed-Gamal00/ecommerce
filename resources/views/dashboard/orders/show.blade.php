@@ -22,8 +22,12 @@
             <div class="col-xl-4">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title mb-4">اسم المنتج :{{ $item->product->name }}</h4>
                         <ol class="activity-feed">
+                            <li class="feed-item">
+                                <div class="feed-item-list">
+                                    <span class="date fw-bold">اسم المنتج : {{ $item->product->name }}</span>
+                                </div>
+                            </li>
                             <li class="feed-item">
                                 <div class="feed-item-list">
                                     <span class="date fw-bold">القسم : {{ $item->product->parent->name }}</span>
@@ -57,6 +61,31 @@
                             </li>
                         </ol>
 
+                                                @if($order->choices->isNotEmpty())
+                            <li class="feed-item">
+                                <div class="feed-item-list">
+                                    <span class="date fw-bold">اختيارات العميل:</span>
+                                    <ul>
+                                        @foreach($order->choices as $choice)
+                                            <li>
+                                                <strong>الخيار:</strong> {{ $choice->name ?? 'غير معروف' }}
+                                                @if($choice->pivot->sub_choice_id)
+                                                    <br><strong>الاختيارات الفرعية:</strong>
+                                                    @php
+                                                        $subChoices = json_decode($choice->pivot->sub_choice_id);
+                                                    @endphp
+                                                    @if(is_array($subChoices))
+                                                        {{ implode(', ', $subChoices) }}
+                                                    @else
+                                                        {{ $choice->pivot->sub_choice_id }}
+                                                    @endif
+                                                @endif
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </li>
+                        @endif
                     </div>
                 </div>
             </div>

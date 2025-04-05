@@ -66,7 +66,7 @@ class ProductsController extends Controller
 
     public function fetchChoices(Request $request)
     {
-        $choices = Choice::whereNull('parent_id')->with('children')->get();;
+        $choices = Choice::whereNull('parent_id')->with('children')->get();
         return response()->json($choices);
     }
 
@@ -78,7 +78,6 @@ class ProductsController extends Controller
         Gate::authorize('product.create');
         // $categories = MainCategory::whereNull('parent_id')->get();
         $subCategories = MainCategory::whereNull('parent_id')->with('children')->get();
-        $choices = MainCategory::with('choices')->get();
         // return $choices;
         $companies = Company::all();
         $colors = Color::all();
@@ -90,7 +89,6 @@ class ProductsController extends Controller
             'companies',
             'colors',
             'availability_status',
-            'choices'
         ));
     }
 
@@ -131,11 +129,10 @@ class ProductsController extends Controller
     public function edit(string $id)
     {
         //Gate::authorize('product.edit');
-        $product = Product::with('colors', 'chiled', 'parent', 'availability', 'features')->findOrFail($id);
-        // dd($product->images);
+        $product = Product::with('colors', 'choices', 'chiled', 'parent', 'availability', 'features')->findOrFail($id);
+
         $categories = MainCategory::all();
         $subCategories = MainCategory::whereNull('parent_id')->with('children')->get();
-        $choices = MainCategory::with('choices')->get();
         $productChoices = $product->choices->pluck('id')->toArray();
         // dd($productChoices);
         $companies = Company::all();

@@ -178,7 +178,7 @@
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label fw-bold">الخيارات</label>
                                 <div class="col-sm-10">
-                                    <select name="choice_id[]" id="choices" class="form-select colors-select"
+                                    <select name="choice_id[]" id="choices" class="form-select multi-select"
                                         aria-label="الخيارات" multiple>
                                         <option></option>
                                     </select>
@@ -273,7 +273,7 @@
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label fw-bold">الألوان</label>
                                 <div class="col-sm-10">
-                                    <select name="colors[]" id="subcategory" class="form-select colors-select"
+                                    <select name="colors[]" id="subcategory" class="form-select multi-select"
                                         aria-label="الألوان" multiple>
                                         @foreach ($colors as $color)
                                             <option value="{{ $color->id }}"
@@ -585,7 +585,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('.colors-select').select2();
+        $('.multi-select').select2();
 
     });
 </script>

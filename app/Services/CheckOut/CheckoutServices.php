@@ -134,7 +134,7 @@ class CheckoutServices
             ->get();
 
         foreach ($cartItems as $cartItem) {
-            OrderItem::create([
+            $orderItem = OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $cartItem->product_id,
                 'product_name' => $cartItem->product->name,
@@ -142,30 +142,15 @@ class CheckoutServices
                 'quantity' => $cartItem->quantity,
             ]);
 
+            if (!empty($cartItem->choices)) {
+                foreach ($cartItem->choices as $choiceId) {
+                    $orderItem->choices()->attach($choiceId); // لو فيه sub_choice كمان، زودها مع withPivot
+                }
+            }
+
             $cartItem->product->decrement('quantity', $cartItem->quantity);
         }
     }
-
-    public function saveUserChoices($order, $request)
-    {
-        // التأكد من أن choice_id موجود
-        if (!$request->has('choice_id')) {
-            throw new \Exception("choice_id is required");
-        }
-
-        foreach ($request->sub_choice_id as $subChoiceId) {
-            DB::table('order_choices')->insert([
-                'order_id' => $order->id,
-                'choice_id' => $request->choice_id,
-                'sub_choice_id' => $subChoiceId, // سيتم إدخال كل قيمة في سطر منفصل
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
-    }
-
-
-
 
     public function calculateTotal($user): float
     {

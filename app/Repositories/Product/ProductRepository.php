@@ -168,7 +168,6 @@ class ProductRepository implements ProudctInterface
             //   }
             // }
 
-            $product->subSettings()->sync(request()->input('sub_categories'));
             $product->colors()->attach(request()->input('colors'));
 
 
