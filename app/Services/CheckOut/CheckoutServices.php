@@ -125,7 +125,7 @@ class CheckoutServices
             'total_price' => $totalPrice + $addedTax,
         ]);
     }
-
+ 
     public function createOrderItems($order, $user)
     {
         $cartItems = Cart::withoutGlobalScope('cookie_id')
